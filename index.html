@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- App Version for Cache Busting -->
+  <meta name="app-version" content="1.0.0.1776937984">
+
+  <meta name="description" content="Ticgetz Event Organizer Console — Create and manage events, check-in attendees, broadcast messages, and track incidents in real time.">
+  <meta name="theme-color" content="#7c3aed">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://eventorganizer.ticgetz.com/">
+  <meta property="og:title" content="Ticgetz — Event Organizer Console">
+  <meta property="og:description" content="Create and manage events, check-in attendees with QR scanning, broadcast messages, and track incidents — all from one dashboard.">
+  <meta property="og:image" content="https://eventorganizer.ticgetz.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Ticgetz">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://eventorganizer.ticgetz.com/">
+  <meta name="twitter:title" content="Ticgetz — Event Organizer Console">
+  <meta name="twitter:description" content="Create and manage events, check-in attendees with QR scanning, broadcast messages, and track incidents — all from one dashboard.">
+  <meta name="twitter:image" content="https://eventorganizer.ticgetz.com/og-image.png">
+
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Ticgetz Organizer">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Ticgetz — Event Organizer Console</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon.png">
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCGfDrG_hkucch9d2rW4KKNeJzheynJWbE&libraries=places,marker"></script>
+</head>
+<body>
+  <!-- Auto-refresh: detect new deploys via version.json polling -->
+  <script>
+    var META_VERSION = document.querySelector('meta[name="app-version"]')
+      ? document.querySelector('meta[name="app-version"]').getAttribute('content')
+      : null;
+
+    var LS_KEY = 'ticgetz_organizer_deployed_version';
+
+    function clearCachesAndReload(newVersion) {
+      // Save the new version BEFORE reloading so the next load doesn't loop
+      try { localStorage.setItem(LS_KEY, newVersion); } catch(e) {}
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          names.forEach(function(name) { caches.delete(name); });
+        });
+      }
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          regs.forEach(function(r) { r.unregister(); });
+          window.location.reload(true);
+        }).catch(function() { window.location.reload(true); });
+      } else {
+        window.location.reload(true);
+      }
+    }
+
+    function checkVersion() {
+      fetch('/version.json?_t=' + Date.now(), { cache: 'no-store' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (!data.version) return;
+          var serverVersion = data.version;
+
+          // Check what version we already accepted (persisted across reloads)
+          var acceptedVersion = null;
+          try { acceptedVersion = localStorage.getItem(LS_KEY); } catch(e) {}
+
+          // If we already reloaded for this server version, don't loop
+          if (acceptedVersion === serverVersion) return;
+
+          // If the baked-in meta version already matches, record it and stop
+          if (META_VERSION === serverVersion) {
+            try { localStorage.setItem(LS_KEY, serverVersion); } catch(e) {}
+            return;
+          }
+
+          console.log('New version detected: ' + serverVersion + ' (current: ' + META_VERSION + '). Refreshing...');
+          clearCachesAndReload(serverVersion);
+        })
+        .catch(function() { /* network error — ignore */ });
+    }
+
+    // First check 10s after load, then every 60s
+    setTimeout(function() {
+      checkVersion();
+      setInterval(checkVersion, 60000);
+    }, 10000);
+
+    // Also check when tab becomes visible again
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible') { checkVersion(); }
+    });
+  </script>
+
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
