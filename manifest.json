@@ -1,0 +1,35 @@
+{
+    "name": "Ticgetz Event Organizer Console",
+    "short_name": "Organizer",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#7c3aed",
+    "theme_color": "#7c3aed",
+    "description": "Create and manage events, check-in attendees, and track incidents in real time.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
